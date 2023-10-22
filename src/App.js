@@ -1,6 +1,8 @@
-
+import { Folder } from 'react-bootstrap-icons';
+import { FaFile } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [data, setData] = useState(null);
@@ -23,6 +25,10 @@ function App() {
     fetchData();
   }, []); // Пустой массив зависимостей означает, что эффект выполнится один раз после монтирования компонента
 
+
+  const clickHandler = ()=>{
+    alert('Test')
+  }
   return (
     <div>
       {data ? (
@@ -30,7 +36,22 @@ function App() {
         <ul>
           {data.map((item, index) => (
             <li key={index}>
-              {item.isDirectory ? `Папка: ${item.name}` : `Файл: ${item.name}`}
+              {item.isDirectory ? (
+               
+                <span>
+                  <Folder size={24} className='m-2' />
+                  Папка: <a href='' onClick={clickHandler}>{item.name.toUpperCase()}</a>
+                </span>
+                
+                
+              ) : (
+                
+                <span>
+                  <FaFile size={24} className='m-2' /> Файл: {item.name}
+                </span>
+                
+                
+              )}
             </li>
           ))}
         </ul>
