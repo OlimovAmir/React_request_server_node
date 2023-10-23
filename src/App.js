@@ -26,21 +26,38 @@ function App() {
   }, []); // Пустой массив зависимостей означает, что эффект выполнится один раз после монтирования компонента
 
 
-  const clickHandler = ()=>{
-    alert('Test')
+  const clickHandler = event=>{
+    event.preventDefault();
+    console.log(event.target.attributes.href.value);
+    async function fetchData() {
+      try {
+        const response = await fetch('http://localhost:8000/?path='+event.target.attributes.href.value ); // Замените URL на свой
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const jsonData = await response.json();
+        setData(jsonData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+    fetchData();
   }
   return (
     <div>
+    
       {data ? (
         // Отображение данных, полученных в результате запроса
         <ul>
           {data.map((item, index) => (
             <li key={index}>
+            
               {item.isDirectory ? (
                
                 <span>
                   <Folder size={24} className='m-2' />
-                  Папка: <a href='' onClick={clickHandler}>{item.name.toUpperCase()}</a>
+                  Папка: <a href={ '/' + item.name} onClick={clickHandler}>{item.name.toUpperCase()}</a>
+                  
                 </span>
                 
                 
