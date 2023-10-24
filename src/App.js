@@ -1,17 +1,19 @@
-import { Folder } from 'react-bootstrap-icons';
+import { Folder, ArrowLeft } from 'react-bootstrap-icons';
 import { FaFile } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 function App() {
   const [data, setData] = useState(null);
+  const [parent, setParent] = useState('');
   const [currentPath, setCurrentPath] = useState('/');
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchData(path) {
       try {
-        const response = await fetch('http://localhost:8000/');
+        const response = await fetch('http://localhost:8000/?path=' + path);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -22,34 +24,36 @@ function App() {
       }
     }
 
-    fetchData();
-  }, []);
+    fetchData(currentPath);
+  }, [currentPath]);
 
   const clickHandler = (event, item) => {
     event.preventDefault();
+
     if (item.isDirectory) {
       const newPath = currentPath + item.name + '/';
-      async function fetchData() {
-        try {
-          const response = await fetch('http://localhost:8000/?path=' + newPath);
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const jsonData = await response.json();
-          setData(jsonData);
-        } catch (error) {
-          console.error('Error fetching data:', error);
-        }
-      }
-      fetchData();
-      setCurrentPath(newPath); // Обновляем путь после отправки запроса
+      setCurrentPath(newPath); // Обновляем путь
     }
+  };
+
+  const goBack = () => {
+    // Извлекаем предыдущую директорию из текущего пути
+    const parts = currentPath.split('/');
+    
+    parts.pop();
+    console.log(parts);
+    const newPath = parts.join('/') + '/';
+    console.log(newPath);
+    setCurrentPath(newPath);
   };
 
   return (
     <div>
-      <div className=''>
-        current: {currentPath}
+      <div>
+        <button onClick={goBack}>
+          <ArrowLeft size={24} /> Назад
+        </button>
+        <span className='ml-3'>Текущий путь: {currentPath}</span>
       </div>
       {data ? (
         <ul>
